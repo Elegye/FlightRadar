@@ -1,14 +1,27 @@
-import influxdb_client
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client import InfluxDBClient, Point
 
-bucket = "<my-bucket>"
-org = "<my-org>"
-token = "<my-token>"
-# Store the URL of your InfluxDB instance
-url="http://bichette:8086"
+username = 'pi'
+password = 'dwioalex'
 
-client = influxdb_client.InfluxDBClient(
-   url=url,
-   token=token,
-   org=org
-)
+database = 'test'
+retention_policy = 'a_year'
+
+bucket = f'{database}/{retention_policy}'
+
+with InfluxDBClient(url='http://192.168.1.38:8086', token=f'{username}:{password}', org='-') as client:
+
+    with client.write_api() as write_api:
+        print('*** Write Points ***')
+
+        point = Point("mem").tag("host", "host1").field("used_percent", 25.34)
+        print(point.to_line_protocol())
+
+        write_api.write(bucket=bucket, record=point)
+
+    print('*** Query Points ***')
+
+    query_api = client.query_api()
+    query = f'from(bucket: \"{bucket}\") |> range(start: -1h)'
+    tables = query_api.query(query)
+    for record in tables[0].records:
+        print(f'#{record.get_time()} #{record.get_measurement()}: #{record.get_field()} #{record.get_value()}')
