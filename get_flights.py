@@ -34,17 +34,17 @@ with InfluxDBClient(url='http://192.168.1.38:8086', token=f'{username}:{password
                 point = point.tag("airline_iata", flight["airline_iata"])
                 point = point.tag("origin_airport_iata", flight["origin_airport_iata"])
                 point = point.tag("destination_airport_iata", flight["destination_airport_iata"])
-                
+                point = point.tag("callsign", flight["callsign"])
+                point = point.tag("number", flight["number"])
+                point = point.tag("registration", flight["registration"])
+                point = point.tag("id", flight["id"])
+
                 point = point.field("altitude", flight["altitude"])
                 point = point.field("ground_speed", flight["ground_speed"])
                 point = point.field("heading", flight["heading"])
                 point = point.field("latitude", flight["latitude"])
                 point = point.field("longitude", flight["longitude"])
                 point = point.field("vertical_speed", flight["vertical_speed"])
-                point = point.field("callsign", flight["callsign"])
-                point = point.field("number", flight["number"])
-                point = point.field("registration", flight["registration"])
-                point = point.field("id", flight["id"])
                 
                 point = point.time(flight["time"] * 1000, write_precision=WritePrecision.MS)
 
