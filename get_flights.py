@@ -14,7 +14,7 @@ bucket = f'{database}/{retention_policy}'
 
 fr_api = FlightRadar24API()
 
-flights = fr_api.get_flights(bounds="49.379,45.456,-21.134,20.174")
+flights = fr_api.get_flights(bounds="51.27,42.28,-6.28,9.41")
 
 filename = "data/{}.json".format(datetime.datetime.now().timestamp())
 Path("./data").mkdir(parents=True, exist_ok=True)
