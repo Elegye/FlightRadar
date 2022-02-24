@@ -14,9 +14,9 @@ bucket = f'{database}/{retention_policy}'
 
 fr_api = FlightRadar24API()
 
-zones = fr_api.get_zones()
-bounds = fr_api.get_bounds(zones["europe"]["subzones"]["france"])
-flights = fr_api.get_flights(bounds=bounds)
+#zones = fr_api.get_zones()
+#bounds = fr_api.get_bounds(zones["europe"]["subzones"]["france"])
+flights = fr_api.get_flights(bounds="51.27,42.28,-6.28,9.41")
 
 filename = "data/{}.json".format(datetime.datetime.now().timestamp())
 Path("./data").mkdir(parents=True, exist_ok=True)
@@ -41,6 +41,7 @@ with InfluxDBClient(url='http://192.168.1.38:8086', token=f'{username}:{password
             point = point.field("latitude", flight.latitude)
             point = point.field("longitude", flight.longitude)
             point = point.field("vertical_speed", flight.vertical_speed)
+            point = point.field("squawk", flight.squawk)
                 
             point = point.time(flight.time * 1000, write_precision=WritePrecision.MS)
 
