@@ -9,7 +9,7 @@ username = 'pi'
 password = 'dwioalex'
 
 database = 'flight_radar'
-retention_policy = 'a_year'
+retention_policy = 'a_week'
 bucket = f'{database}/{retention_policy}'
 
 fr_api = FlightRadar24API()
