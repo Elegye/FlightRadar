@@ -1,12 +1,17 @@
 from FlightRadar24.api import FlightRadar24API
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.domain.write_precision import WritePrecision
-from pathlib import Path
-import datetime
-import json
+from dotenv import load_dotenv
+import os
 
-username = 'pi'
-password = 'dwioalex'
+load_dotenv()
+
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
+ip = os.environ.get("IP_ADDRESS")
+port = os.environ.get("PORT")
+
+url = f'http://{ip}:{port}'
 
 database = 'flight_radar'
 retention_policy = 'a_week'
@@ -18,10 +23,7 @@ fr_api = FlightRadar24API()
 #bounds = fr_api.get_bounds(zones["europe"]["subzones"]["france"])
 flights = fr_api.get_flights(bounds="51.27,42.28,-6.28,9.41")
 
-filename = "data/{}.json".format(datetime.datetime.now().timestamp())
-Path("./data").mkdir(parents=True, exist_ok=True)
-
-with InfluxDBClient(url='http://192.168.1.38:8086', token=f'{username}:{password}', org='-') as client:
+with InfluxDBClient(url=url, token=f'{username}:{password}', org='-') as client:
     with client.write_api() as write_api:
         print('*** Write Points ***')
         for flight in flights:
@@ -44,7 +46,5 @@ with InfluxDBClient(url='http://192.168.1.38:8086', token=f'{username}:{password
             point = point.field("squawk", flight.squawk)
                 
             point = point.time(flight.time * 1000, write_precision=WritePrecision.MS)
-
-            print(point.to_line_protocol())
 
             write_api.write(bucket=bucket, record=point)
