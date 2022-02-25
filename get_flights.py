@@ -25,7 +25,6 @@ flights = fr_api.get_flights(bounds="51.27,42.28,-6.28,9.41")
 
 with InfluxDBClient(url=url, token=f'{username}:{password}', org='-') as client:
     with client.write_api() as write_api:
-        print('*** Write Points ***')
         for flight in flights:
             point = Point("position")
             point = point.tag("aircraft_code", flight.aircraft_code)
